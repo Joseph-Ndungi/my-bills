@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#f0fdf4" stop-opacity="0.85" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#064e3b" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <!-- iOS App Icon Squircle Background -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)" />
+  
+  <!-- Subtle circular backdrop -->
+  <circle cx="256" cy="256" r="180" fill="#ffffff" fill-opacity="0.08" />
+  
+  <!-- Card / Bill Graphic -->
+  <g filter="url(#shadow)">
+    <!-- Base Card -->
+    <rect x="116" y="116" width="280" height="280" rx="36" fill="url(#cardGrad)" />
+    
+    <!-- Top Card Notch/Bar -->
+    <rect x="156" y="156" width="70" height="12" rx="6" fill="#10b981" />
+    <rect x="306" y="156" width="50" height="12" rx="6" fill="#cbd5e1" />
+    
+    <!-- Dollar / Bill Icon Symbol in center -->
+    <circle cx="256" cy="256" r="54" fill="#ecfdf5" stroke="#10b981" stroke-width="6" />
+    
+    <!-- Stylized Currency / Recurring Cycle Icon -->
+    <path d="M256 220 v72 M240 236 c0-10 8-16 16-16 s16 6 16 16 c0 16-32 14-32 30 0 10 8 16 16 16 s16-6 16-16" 
+          stroke="#059669" stroke-width="7" stroke-linecap="round" fill="none" />
+          
+    <!-- Recurring arrows badge -->
+    <g transform="translate(320, 320)">
+      <circle cx="0" cy="0" r="28" fill="#10b981" />
+      <path d="M-10 -4 A 12 12 0 0 1 10 -4 L 8 -10 M 10 -4 L 4 -2" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10 4 A 12 12 0 0 1 -10 4 L -8 10 M -10 4 L -4 2" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Decorative bill details lines -->
+    <rect x="156" y="326" width="110" height="10" rx="5" fill="#cbd5e1" />
+  </g>
+</svg>

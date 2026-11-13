@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>BillTrack - Recurrent Bills & Subscriptions</title>
+  
+  <!-- iOS Meta Tags for Home Screen App Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BillTrack">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#10b981">
+
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="3"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <path d="M7 15h.01"></path>
+            <path d="M11 15h2"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>BillTrack</h1>
+          <div class="subtitle">Recurring Expenses & Subscriptions</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button type="button" class="btn-icon" id="btn-toggle-theme" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+        </button>
+
+        <!-- Settings / Backup Modal Button -->
+        <button type="button" class="btn-icon" id="btn-settings" title="Settings, Currency & Backup" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        <!-- Primary Add Bill Button -->
+        <button type="button" class="btn-primary" id="btn-add-bill" style="padding: 9px 18px; border-radius: var(--radius-pill); font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Add Bill</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Summary Cards -->
+    <section class="hero-metrics" aria-label="Summary Totals">
+      <!-- Active Monthly Total -->
+      <div class="metric-card primary">
+        <div class="metric-header">
+          <span class="metric-label">Active Monthly Total</span>
+          <span class="metric-badge" id="metric-active-count">0 active bills</span>
+        </div>
+        <div class="metric-value" id="metric-active-monthly">KSh 0.00</div>
+        <div class="metric-sub">
+          <span>Normalized monthly recurring cost</span>
+        </div>
+      </div>
+
+      <!-- Active Weekly Total -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Active Weekly Total</span>
+          <span class="metric-badge">Weekly Burn</span>
+        </div>
+        <div class="metric-value" id="metric-active-weekly">KSh 0.00</div>
+        <div class="metric-sub">
+          <span>Weekly cash flow allocation</span>
+        </div>
+      </div>
+
+      <!-- Paused Subscriptions & Savings -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Paused Savings</span>
+          <span class="metric-badge" id="metric-paused-count">0 paused</span>
+        </div>
+        <div class="metric-value" id="metric-paused-savings" style="color: var(--accent-amber);">KSh 0.00</div>
+        <div class="metric-sub">
+          <span>Next Due: <strong id="metric-next-due" style="font-weight:600; color:var(--text-primary)">-</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Presets Carousel -->
+    <section class="presets-section">
+      <div class="section-label">
+        <span>Quick Add Presets</span>
+        <span style="font-weight: normal; font-size: 0.75rem; color: var(--text-muted)">1-Tap Pre-configured Templates</span>
+      </div>
+      <div class="presets-scroll" id="presets-scroll">
+        <!-- Rendered dynamically from presets.js -->
+      </div>
+    </section>
+
+    <!-- Controls Bar: Filter, Search, Sort -->
+    <div class="controls-bar">
+      <!-- iOS Segmented Control -->
+      <div class="segmented-control" role="tablist">
+        <button type="button" class="segment-btn active" data-filter="all" role="tab">
+          <span>All</span>
+          <span class="segment-count" id="count-all">0</span>
+        </button>
+        <button type="button" class="segment-btn" data-filter="active" role="tab">
+          <span>Active</span>
+          <span class="segment-count" id="count-active">0</span>
+        </button>
+        <button type="button" class="segment-btn" data-filter="paused" role="tab">
+          <span>Paused</span>
+          <span class="segment-count" id="count-paused">0</span>
+        </button>
+      </div>
+
+      <!-- Search & Sort Group -->
+      <div class="search-sort-group">
+        <div class="search-input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-bills" placeholder="Search bills or packages..." aria-label="Search bills">
+        </div>
+
+        <select id="sort-bills" class="select-clean" aria-label="Sort bills">
+          <option value="dueDate">Sort by: Next Due Date</option>
+          <option value="amountDesc">Sort by: Highest Price</option>
+          <option value="nameAsc">Sort by: Name (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bills List Container -->
+    <main class="bills-list" id="bills-container">
+      <!-- Rendered dynamically -->
+    </main>
+
+    <!-- Spending Distribution Visual Analytics -->
+    <section class="analytics-section">
+      <div class="analytics-header">
+        <div>
+          <h3>Monthly Spending Distribution</h3>
+          <p class="metric-sub">Active budget categorized by service type</p>
+        </div>
+      </div>
+      <div class="bars-stack" id="category-bar-stack">
+        <!-- Visual stacked colored segments -->
+      </div>
+      <div class="category-legend-grid" id="category-legend-grid">
+        <!-- Legend items -->
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Mobile Floating Action Button -->
+  <button type="button" class="fab-btn" id="btn-fab-add" aria-label="Add New Bill">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    <span>New Bill</span>
+  </button>
+
+  <!-- ========================================================================
+       MODAL 1: ADD / EDIT BILL
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-bill">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2 id="modal-bill-title">Add Recurrent Bill</h2>
+        <button type="button" class="btn-close btn-close-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="form-bill">
+        <!-- Service Name & Category -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bill-name">Bill / Service Name *</label>
+            <input type="text" id="bill-name" name="name" class="form-input" placeholder="e.g. Netflix, Gym, Rent" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-category">Category *</label>
+            <select id="bill-category" name="category" class="form-select">
+              <option value="housing">Housing & Rent</option>
+              <option value="utilities">Utilities & Internet</option>
+              <option value="entertainment">Entertainment & Media</option>
+              <option value="creators">Creators & Channels</option>
+              <option value="tools">AI, Tech & Software</option>
+              <option value="fitness">Health & Fitness</option>
+              <option value="other">Other Recurring</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Package / Tier Plan & Suggestions -->
+        <div class="form-group">
+          <label class="form-label" for="bill-package">Package / Plan Tier</label>
+          <input type="text" id="bill-package" name="packageTier" class="form-input" placeholder="e.g. Premium 4K, 300 Mbps, Duo, Plus">
+          <div class="package-suggestions" id="bill-pkg-suggestions"></div>
+        </div>
+
+        <!-- Amount & Cycle -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bill-amount">Cost Amount *</label>
+            <input type="number" id="bill-amount" name="amount" class="form-input" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-cycle">Billing Frequency *</label>
+            <select id="bill-cycle" name="cycle" class="form-select">
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Every 2 Weeks</option>
+              <option value="quarterly">Quarterly (3 Months)</option>
+              <option value="semiannual">Every 6 Months</option>
+              <option value="yearly">Yearly (Annual)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Due Day & Payment Method -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bill-day">Billing Day of Month (1-31)</label>
+            <input type="number" id="bill-day" name="billingDay" class="form-input" min="1" max="31" value="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-payment">Payment Method</label>
+            <select id="bill-payment" name="paymentMethod" class="form-select">
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Apple Pay">Apple Pay</option>
+              <option value="Google Pay">Google Pay</option>
+              <option value="Bank Transfer / Direct Debit">Bank Transfer / Direct Debit</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Cash">Cash</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Status & Portal Link -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bill-status">Status</label>
+            <select id="bill-status" name="status" class="form-select">
+              <option value="active">Active (Counted in totals)</option>
+              <option value="paused">Paused (Excluded from totals)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bill-url">Management Portal URL (Optional)</label>
+            <input type="url" id="bill-url" name="url" class="form-input" placeholder="https://...">
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="form-label" for="bill-notes">Notes / Details</label>
+          <textarea id="bill-notes" name="notes" class="form-textarea" placeholder="e.g. Shared with roommate, renews automatically, special discount"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn-primary">Save Bill</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: CHANGE PACKAGE / TIER
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-package">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2>Change Package / Plan</h2>
+          <div class="metric-sub" id="pkg-modal-bill-name" style="font-size: 0.95rem; font-weight: 700; color: var(--accent-green);">Service Name</div>
+        </div>
+        <button type="button" class="btn-close btn-close-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="form-change-package">
+        <div style="background: var(--bg-card); border: 1px solid var(--bg-card-border); padding: 12px; border-radius: var(--radius-md); margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+            <span style="color: var(--text-secondary)">Current Tier:</span>
+            <strong id="pkg-modal-current-tier" style="color: var(--text-primary)">Standard</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+            <span style="color: var(--text-secondary)">Current Price:</span>
+            <strong id="pkg-modal-current-price" style="color: var(--text-primary)">$0.00 / mo</strong>
+          </div>
+        </div>
+
+        <!-- Quick suggestions from preset -->
+        <div class="form-group">
+          <label class="form-label">Available / Suggested Packages</label>
+          <div class="package-suggestions" id="pkg-quick-suggestions">
+            <!-- Dynamic suggestion chips -->
+          </div>
+        </div>
+
+        <!-- New Tier & New Price -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="input-new-tier">New Package Name *</label>
+            <input type="text" id="input-new-tier" class="form-input" placeholder="e.g. Premium 4K or Family Plan" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="input-new-price">New Price Amount *</label>
+            <input type="number" id="input-new-price" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+        </div>
+
+        <!-- Change Note / Reason -->
+        <div class="form-group">
+          <label class="form-label" for="input-pkg-note">Reason or Note (Optional)</label>
+          <input type="text" id="input-pkg-note" class="form-input" placeholder="e.g. Upgraded for 4K streaming, or Downgraded to save money">
+        </div>
+
+        <!-- Package History -->
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-label">Change History</label>
+          <div class="history-list" id="pkg-history-container"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn-primary">Apply Package Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 3: SETTINGS & BACKUP
+       ======================================================================== -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2>Settings & Data Portability</h2>
+        <button type="button" class="btn-close btn-close-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="setting-currency">Currency Symbol</label>
+        <select id="setting-currency" class="form-select">
+          <option value="KSh " selected>KES (KSh) - Kenyan Shilling</option>
+          <option value="$">USD ($) - US Dollar</option>
+          <option value="€">EUR (€) - Euro</option>
+          <option value="£">GBP (£) - British Pound</option>
+          <option value="CA$ ">CAD (CA$) - Canadian Dollar</option>
+          <option value="A$ ">AUD (A$) - Australian Dollar</option>
+          <option value="₹">INR (₹) - Indian Rupee</option>
+          <option value="¥">JPY (¥) - Japanese Yen</option>
+          <option value="CHF ">CHF - Swiss Franc</option>
+          <option value="R$ ">BRL (R$) - Brazilian Real</option>
+          <option value="R ">ZAR (R) - South African Rand</option>
+        </select>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--bg-card-border); margin: 20px 0;">
+
+      <div class="form-group">
+        <label class="form-label">Backup & iOS Transfer</label>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+          Export your complete bill registry as JSON to easily move data between devices, or download a CSV to open in Excel / Google Sheets.
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" id="btn-export-json" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Export Backup (JSON)</span>
+          </button>
+          <button type="button" class="btn-secondary" id="btn-export-csv" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Export Spreadsheet (CSV)</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+          <button type="button" class="btn-secondary" id="btn-import-json" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span>Restore / Import JSON File</span>
+          </button>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--bg-card-border); margin: 20px 0;">
+
+      <div class="form-group">
+        <label class="form-label" style="color: var(--accent-red)">Reset / Reset Defaults</label>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">
+          Restore initial template with Rent, WiFi, Netflix, Spotify, YouTube, ChatGPT, and Gym.
+        </p>
+        <button type="button" class="btn-danger" id="btn-reset-defaults" style="width: 100%;">
+          Reset to Sample Subscriptions
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary btn-close-modal" style="width: 100%;">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Anchor -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Main JavaScript App Entry (Runs both on web servers and via direct file:// double-click) -->
+  <script src="./js/bundle.js"></script>
+</body>
+</html>
